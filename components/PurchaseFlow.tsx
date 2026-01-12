@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, ChevronRight, CreditCard, ShieldCheck, Truck, ArrowLeft, Check, Sparkles, Zap } from 'lucide-react';
-import { GoogleGenAI } from "@google/genai";
 
 interface PurchaseFlowProps {
   onClose: () => void;
@@ -11,53 +10,20 @@ interface PurchaseFlowProps {
 const PurchaseFlow: React.FC<PurchaseFlowProps> = ({ onClose, onComplete }) => {
   const [step, setStep] = useState<'model' | 'checkout'>('model');
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
-  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
-  const [isGenerating, setIsGenerating] = useState(true);
+  const [isVisualizing, setIsVisualizing] = useState(true);
+
+  // This is the EXACT SAME realistic picture that will show everywhere.
+  // Using a high-quality static asset ensures it works on Vercel perfectly.
+  const REALISTIC_PRODUCT_IMAGE = "https://images.unsplash.com/photo-1616348436168-de43ad0db179?q=80&w=1200&auto=format&fit=crop";
 
   const UNIT_PRICE = 69.99;
 
   useEffect(() => {
-    const generateRealisticVisual = async () => {
-      try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        // Using the high-fidelity prompt that produces the realistic look the user loved
-        const prompt = "A ultra-realistic high-end studio product photograph of a sleek matte black iPhone power case. The case has a premium texture and four small, glowing blue LED battery indicators at the bottom. It stands vertically on a minimalist dark metallic circular pedestal. The background is a dark, luxury industrial studio with cinematic blue accent lighting and soft bokeh. 8k resolution, photorealistic, sharp focus, professional lighting.";
-        
-        const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash-image',
-          contents: {
-            parts: [{ text: prompt }],
-          },
-          config: {
-            imageConfig: {
-              aspectRatio: "1:1"
-            }
-          }
-        });
-
-        let foundImage = false;
-        if (response.candidates && response.candidates[0]?.content?.parts) {
-          for (const part of response.candidates[0].content.parts) {
-            if (part.inlineData) {
-              const base64Data = part.inlineData.data;
-              setGeneratedImageUrl(`data:image/png;base64,${base64Data}`);
-              foundImage = true;
-              break;
-            }
-          }
-        }
-        
-        if (!foundImage) throw new Error("Image data missing");
-      } catch (error) {
-        console.error("Realistic image generation failed:", error);
-        // High-quality realistic fallback that matches the brand aesthetic
-        setGeneratedImageUrl("https://images.unsplash.com/photo-1616348436168-de43ad0db179?q=80&w=1200&auto=format&fit=crop");
-      } finally {
-        setIsGenerating(false);
-      }
-    };
-
-    generateRealisticVisual();
+    // Luxury transition delay to maintain the "Visualizing Core" brand vibe
+    const timer = setTimeout(() => {
+      setIsVisualizing(false);
+    }, 1500);
+    return () => clearTimeout(timer);
   }, []);
 
   const models = [
@@ -76,9 +42,11 @@ const PurchaseFlow: React.FC<PurchaseFlowProps> = ({ onClose, onComplete }) => {
       
       <div className="relative w-full max-w-7xl h-full md:h-[90vh] md:max-h-[900px] bg-zinc-950 md:rounded-[3rem] border-x md:border border-white/10 shadow-[0_0_150px_rgba(0,0,0,1)] overflow-hidden flex flex-col md:flex-row">
         
-        {/* Realistic Product Visual Section */}
+        {/* Consistent Realistic Product Visual Section */}
         <div className="w-full md:w-1/2 h-[40vh] md:h-full bg-[#050505] relative flex flex-col items-center justify-center overflow-hidden border-b md:border-b-0 md:border-r border-white/5 group flex-shrink-0">
-          {isGenerating ? (
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-transparent opacity-50"></div>
+          
+          {isVisualizing ? (
             <div className="flex flex-col items-center justify-center space-y-6 animate-pulse px-6">
               <div className="relative">
                 <div className="w-16 h-16 md:w-24 md:h-24 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
@@ -86,23 +54,22 @@ const PurchaseFlow: React.FC<PurchaseFlowProps> = ({ onClose, onComplete }) => {
               </div>
               <div className="text-center">
                 <p className="text-white font-black uppercase tracking-[0.3em] text-[10px] md:text-xs mb-2">Visualizing Core</p>
-                <p className="text-zinc-500 text-[8px] md:text-[10px] uppercase tracking-widest">Rendering High-Fidelity Asset...</p>
+                <p className="text-zinc-500 text-[8px] md:text-[10px] uppercase tracking-widest">Optimizing Performance Geometry...</p>
               </div>
             </div>
           ) : (
-            <>
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-transparent opacity-50"></div>
-              <div className="relative w-full h-full flex items-center justify-center p-6 md:p-16">
+            <div className="relative w-full h-full flex flex-col items-center justify-center animate-in zoom-in-95 duration-1000">
+              <div className="relative w-full h-full p-8 md:p-16 flex items-center justify-center">
                 <img 
-                  src={generatedImageUrl || ""} 
-                  alt="Vercel Realistic Power Case" 
-                  className="w-full h-full object-contain filter drop-shadow-[0_20px_60px_rgba(0,0,0,0.9)] transition-all duration-1000 group-hover:scale-105"
+                  src={REALISTIC_PRODUCT_IMAGE} 
+                  alt="Vercel Masterpiece Edition" 
+                  className="w-full h-full object-contain filter drop-shadow-[0_20px_60px_rgba(0,0,0,0.9)] transition-all duration-1000 group-hover:scale-105 rounded-[2rem] md:rounded-[3rem]"
                 />
               </div>
               
               <div className="absolute bottom-6 left-8 right-8 flex justify-between items-end z-10 pointer-events-none">
                 <div>
-                  <h3 className="text-2xl md:text-4xl font-black uppercase tracking-tighter mb-0">Vercel Core</h3>
+                  <h3 className="text-2xl md:text-4xl font-black uppercase tracking-tighter mb-0 text-white">Vercel Core</h3>
                   <p className="text-zinc-500 text-[8px] md:text-xs font-bold uppercase tracking-[0.5em]">Studio Master Edition</p>
                 </div>
                 <div className="flex flex-col items-end gap-2">
@@ -112,7 +79,7 @@ const PurchaseFlow: React.FC<PurchaseFlowProps> = ({ onClose, onComplete }) => {
                   </div>
                 </div>
               </div>
-            </>
+            </div>
           )}
         </div>
 
@@ -212,15 +179,15 @@ const PurchaseFlow: React.FC<PurchaseFlowProps> = ({ onClose, onComplete }) => {
           <div className="p-6 md:p-12 border-t border-white/5 bg-black/60 backdrop-blur-3xl sticky bottom-0 z-40">
             {step === 'model' ? (
               <button
-                disabled={!selectedModel || isGenerating}
+                disabled={!selectedModel || isVisualizing}
                 onClick={() => setStep('checkout')}
                 className={`w-full py-5 md:py-8 rounded-[1.5rem] md:rounded-[2rem] font-black text-sm md:text-xl uppercase tracking-[0.4em] transition-all duration-500 flex items-center justify-center group shadow-2xl ${
-                  selectedModel && !isGenerating
+                  selectedModel && !isVisualizing
                   ? 'bg-white text-black hover:bg-zinc-200 hover:-translate-y-1' 
-                  : 'bg-zinc-900 text-zinc-700 cursor-not-allowed'
+                  : 'bg-zinc-900 text-zinc-700 cursor-not-allowed opacity-50'
                 }`}
               >
-                {isGenerating ? 'Visualizing...' : 'Continue to Checkout'} <ChevronRight size={22} className="ml-2 group-hover:translate-x-2 transition-transform" />
+                {isVisualizing ? 'Visualizing...' : 'Continue to Checkout'} <ChevronRight size={22} className="ml-2 group-hover:translate-x-2 transition-transform" />
               </button>
             ) : (
               <button
