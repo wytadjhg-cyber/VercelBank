@@ -1,16 +1,16 @@
 
 import React, { useState } from 'react';
-import Navbar from './components/Navbar.tsx';
-import Hero from './components/Hero.tsx';
-import Features from './components/Features.tsx';
-import Lifestyle from './components/Lifestyle.tsx';
-import ProductDetails from './components/ProductDetails.tsx';
-import Testimonials from './components/Testimonials.tsx';
-import Pricing from './components/Pricing.tsx';
-import FAQ from './components/FAQ.tsx';
-import Footer from './components/Footer.tsx';
-import CartSidebar from './components/CartSidebar.tsx';
-import PurchaseFlow from './components/PurchaseFlow.tsx';
+import Navbar from './components/Navbar';
+import Hero from './components/Hero';
+import Features from './components/Features';
+import Lifestyle from './components/Lifestyle';
+import ProductDetails from './components/ProductDetails';
+import Testimonials from './components/Testimonials';
+import Pricing from './components/Pricing';
+import FAQ from './components/FAQ';
+import Footer from './components/Footer';
+import CartSidebar from './components/CartSidebar';
+import PurchaseFlow from './components/PurchaseFlow';
 
 const App: React.FC = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
