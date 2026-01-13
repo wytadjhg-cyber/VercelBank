@@ -1,13 +1,14 @@
 
 import React from 'react';
 import { Check, ShieldCheck, Truck, Zap } from 'lucide-react';
+import AIProductImage from './AIProductImage.tsx';
 
 interface PricingProps {
   onAddToCart: () => void;
   productImage: string;
 }
 
-const Pricing: React.FC<PricingProps> = ({ onAddToCart, productImage }) => {
+const Pricing: React.FC<PricingProps> = ({ onAddToCart }) => {
   return (
     <section id="pricing" className="py-24 bg-black relative overflow-hidden scroll-mt-24">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[600px] bg-blue-600/5 blur-[180px] opacity-30 rounded-full"></div>
@@ -74,20 +75,7 @@ const Pricing: React.FC<PricingProps> = ({ onAddToCart, productImage }) => {
 
           {/* Product Image Side */}
           <div className="flex-1 w-full max-w-sm lg:max-w-md order-1 lg:order-2">
-            <div className="relative group">
-               {/* Decorative elements */}
-               <div className="absolute inset-0 bg-blue-600/10 blur-[100px] rounded-full scale-90 opacity-40"></div>
-               
-               <img 
-                src={productImage} 
-                alt="Vercel Core Premium Power Case" 
-                className="relative z-10 w-full h-auto object-contain max-h-[550px] drop-shadow-[0_40px_80px_rgba(0,0,0,1)] transition-transform duration-700 group-hover:scale-[1.03]"
-                style={{ imageRendering: 'auto' }}
-               />
-               
-               {/* Floor Shadow */}
-               <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-48 h-8 bg-black/80 blur-2xl rounded-full"></div>
-            </div>
+            <AIProductImage className="w-full" />
           </div>
 
         </div>

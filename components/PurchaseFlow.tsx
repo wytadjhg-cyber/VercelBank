@@ -1,5 +1,7 @@
+
 import React, { useState } from 'react';
 import { X, ChevronRight, CreditCard, ShieldCheck, Truck, ArrowLeft, Check } from 'lucide-react';
+import AIProductImage from './AIProductImage.tsx';
 
 interface PurchaseFlowProps {
   onClose: () => void;
@@ -7,7 +9,7 @@ interface PurchaseFlowProps {
   productImage: string;
 }
 
-const PurchaseFlow: React.FC<PurchaseFlowProps> = ({ onClose, onComplete, productImage }) => {
+const PurchaseFlow: React.FC<PurchaseFlowProps> = ({ onClose, onComplete }) => {
   const [step, setStep] = useState<'model' | 'checkout'>('model');
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
 
@@ -34,15 +36,7 @@ const PurchaseFlow: React.FC<PurchaseFlowProps> = ({ onClose, onComplete, produc
           <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-transparent opacity-30"></div>
           
           <div className="relative w-full h-full flex items-center justify-center p-16">
-            <img 
-              src={productImage} 
-              alt="Vercel Core High-Fidelity Professional Asset" 
-              className="w-full h-auto max-h-[750px] object-contain drop-shadow-[0_60px_120px_rgba(0,0,0,1)] transition-transform duration-[2s] ease-out group-hover:scale-[1.04]"
-              style={{ 
-                imageRendering: 'auto',
-                WebkitBackfaceVisibility: 'hidden'
-              }}
-            />
+            <AIProductImage className="w-full max-w-[400px]" />
           </div>
 
           <div className="absolute bottom-16 left-16 right-16 flex justify-between items-end z-10">
