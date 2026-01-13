@@ -17,6 +17,9 @@ const App: React.FC = () => {
   const [cartCount, setCartCount] = useState(0);
   const [isPurchaseFlowOpen, setIsPurchaseFlowOpen] = useState(false);
 
+  // The high-resolution asset link provided by the user
+  const PRODUCT_IMAGE = "https://i.ibb.co/QjKsGkBV/phone-case.jpg";
+
   const startPurchaseFlow = () => {
     setIsPurchaseFlowOpen(true);
   };
@@ -41,7 +44,7 @@ const App: React.FC = () => {
         <Lifestyle />
         <ProductDetails />
         <Testimonials />
-        <Pricing onAddToCart={startPurchaseFlow} />
+        <Pricing onAddToCart={startPurchaseFlow} productImage={PRODUCT_IMAGE} />
         <FAQ />
       </main>
 
@@ -58,6 +61,7 @@ const App: React.FC = () => {
         <PurchaseFlow 
           onClose={() => setIsPurchaseFlowOpen(false)} 
           onComplete={completeCheckout} 
+          productImage={PRODUCT_IMAGE}
         />
       )}
     </div>

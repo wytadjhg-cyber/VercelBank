@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
@@ -24,8 +23,16 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .bg-gradient-radial {
-            background: radial-gradient(circle at center, var(--tw-gradient-from) 0%, var(--tw-gradient-to) 100%);
+        /* Optimized Image Rendering for Luxury Photography */
+        img {
+            image-rendering: auto; /* Uses high-quality bicubic interpolation */
+            -ms-interpolation-mode: bicubic;
+            backface-visibility: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        .product-image-container {
+            mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
         }
         ::selection {
             background-color: #0070f3;
@@ -47,7 +54,6 @@
 </head>
 <body>
     <div id="root"></div>
-    <!-- Entry point for the application -->
     <script type="module" src="index.tsx"></script>
 </body>
 </html>
