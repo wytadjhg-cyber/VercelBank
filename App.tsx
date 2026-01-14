@@ -47,31 +47,37 @@ const App: React.FC = () => {
   }, []);
 
   // 🔥 RENDER PAYPAL BUTTONS WHEN CHECKOUT OPENS
-  useEffect(() => {
-    if (!isPurchaseFlowOpen) return;
-    if (!window.paypal) return;
+useEffect(() => {
+  if (!isPurchaseFlowOpen) return;
+  if (!window.paypal) return;
 
-    setTimeout(() => {
-      window.paypal.Buttons({
-        createOrder: async () => {
-          const res = await fetch("/api/orders", { method: "POST" });
-          const data = await res.json();
-          return data.id;
-        },
-        onApprove: async (data: any) => {
-          await fetch(`/api/orders/${data.orderID}/capture`, {
-            method: "POST",
-          });
-          alert("Payment successful!");
-          completeCheckout();
-        },
-        onError: (err: any) => {
-          console.error("PayPal error:", err);
-          alert("Payment failed. Please try again.");
-        },
-      }).render("#paypal-button-container");
-    }, 300);
-  }, [isPurchaseFlowOpen]);
+  const container = document.getElementById("paypal-button-container");
+  if (!container) return;
+
+  // 🚫 Prevent duplicate renders
+  if (container.children.length > 0) return;
+
+  window.paypal.Buttons({
+    fundingSource: window.paypal.FUNDING.PAYPAL, // PayPal wallet only
+    createOrder: async () => {
+      const res = await fetch("/api/orders", { method: "POST" });
+      const data = await res.json();
+      return data.id;
+    },
+    onApprove: async (data: any) => {
+      await fetch(`/api/orders/${data.orderID}/capture`, {
+        method: "POST",
+      });
+      alert("Payment successful!");
+      completeCheckout();
+    },
+    onError: (err: any) => {
+      console.error("PayPal error:", err);
+      alert("Payment failed.");
+    },
+  }).render(container);
+}, [isPurchaseFlowOpen]);
+
 
   return (
     <div className="relative min-h-screen bg-black text-white selection:bg-blue-600 selection:text-white">
