@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ChevronRight } from 'lucide-react';
 
@@ -12,7 +13,7 @@ const Hero: React.FC<HeroProps> = ({ onBuyNow }) => {
       
       <div className="container mx-auto px-6 relative z-10 text-center">
         <div className="inline-block px-5 py-2 mb-10 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm animate-fade-in">
-          <span className="text-[10px] font-black tracking-[0.4em] text-blue-400 uppercase">Founders Edition | Limited Release</span>
+          <span className="text-[10px] font-black tracking-[0.4em] text-blue-400 uppercase">1 iPhone compatibility release</span>
         </div>
         
         <h1 className="text-7xl md:text-[11rem] font-black tracking-tighter mb-10 text-gradient animate-slide-up leading-[0.85]">

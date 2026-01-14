@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { X, ShoppingBag } from 'lucide-react';
 
@@ -6,9 +7,10 @@ interface CartSidebarProps {
   onClose: () => void;
   count: number;
   setCount: (n: number) => void;
+  onCheckout: () => void;
 }
 
-const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, count, setCount }) => {
+const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, count, setCount, onCheckout }) => {
   const UNIT_PRICE = 69.99;
 
   return (
@@ -21,7 +23,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, count, setCo
       <div className={`fixed top-0 right-0 h-full w-full max-w-md bg-zinc-950 border-l border-white/10 z-[101] transition-transform duration-500 ease-out transform ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex flex-col h-full">
           <div className="p-10 border-b border-white/10 flex justify-between items-center bg-black">
-            <h2 className="text-3xl font-black uppercase tracking-tighter">Your Order</h2>
+            <h2 className="text-3xl font-black uppercase tracking-tighter text-white">Your Order</h2>
             <button onClick={onClose} className="p-4 bg-white/5 rounded-full text-zinc-500 hover:text-white transition-all transform hover:rotate-90">
               <X size={24} />
             </button>
@@ -49,7 +51,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, count, setCo
                       <div className="font-black text-3xl text-white">${UNIT_PRICE.toFixed(2)}</div>
                       <div className="flex items-center gap-6 bg-black px-8 py-4 rounded-full border border-white/10">
                         <button onClick={() => setCount(Math.max(0, count - 1))} className="text-zinc-500 hover:text-white font-black text-xl transition-colors">-</button>
-                        <span className="font-black text-sm w-6 text-center">{count}</span>
+                        <span className="font-black text-sm w-6 text-center text-white">{count}</span>
                         <button onClick={() => setCount(count + 1)} className="text-zinc-500 hover:text-white font-black text-xl transition-colors">+</button>
                       </div>
                     </div>
@@ -69,11 +71,14 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, count, setCo
                 <span>Logistics</span>
                 <span className="text-blue-600 font-black tracking-widest">COMPLIMENTARY</span>
               </div>
-              <div className="flex justify-between items-center text-4xl font-black pt-8 border-t border-white/10">
+              <div className="flex justify-between items-center text-4xl font-black pt-8 border-t border-white/10 text-white">
                 <span className="uppercase tracking-tighter">Total</span>
                 <span>${(count * UNIT_PRICE).toFixed(2)}</span>
               </div>
-              <button className="w-full py-10 bg-white text-black font-black text-xl rounded-[2.5rem] hover:bg-zinc-200 transition-all shadow-[0_30px_60px_rgba(255,255,255,0.1)] uppercase tracking-[0.4em]">
+              <button 
+                onClick={onCheckout}
+                className="w-full py-10 bg-white text-black font-black text-xl rounded-[2.5rem] hover:bg-zinc-200 transition-all shadow-[0_30px_60px_rgba(255,255,255,0.1)] uppercase tracking-[0.4em] active:scale-[0.98]"
+              >
                 Proceed to Checkout
               </button>
             </div>

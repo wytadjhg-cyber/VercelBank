@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
@@ -8,6 +9,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        // Minimal error shielding for restricted environments
+        window.addEventListener('unhandledrejection', function (event) {
+            if (event.reason && (event.reason.message === 'Can not read window host' || typeof event.reason === 'object')) {
+                event.preventDefault();
+            }
+        });
+    </script>
+
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -15,29 +26,16 @@
             color: #fff;
             overflow-x: hidden;
         }
-        .glow-blue {
-            filter: drop-shadow(0 0 15px rgba(0, 112, 243, 0.5));
-        }
+
         .text-gradient {
-            background: linear-gradient(135deg, #fff 0%, #888 100%);
+            background: linear-gradient(to bottom, #fff 30%, #3b82f6 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        /* Optimized Image Rendering for Luxury Photography */
-        img {
-            image-rendering: auto; /* Uses high-quality bicubic interpolation */
-            -ms-interpolation-mode: bicubic;
-            backface-visibility: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
-        .product-image-container {
-            mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
-            -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
-        }
-        ::selection {
-            background-color: #0070f3;
-            color: white;
-        }
+
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 10px; }
     </style>
 <script type="importmap">
 {

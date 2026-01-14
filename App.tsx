@@ -17,17 +17,18 @@ const App: React.FC = () => {
   const [cartCount, setCartCount] = useState(0);
   const [isPurchaseFlowOpen, setIsPurchaseFlowOpen] = useState(false);
 
-  // The high-resolution asset link provided by the user
+  // The high-resolution asset link
   const PRODUCT_IMAGE = "https://i.ibb.co/QjKsGkBV/phone-case.jpg";
 
   const startPurchaseFlow = () => {
+    setIsCartOpen(false);
     setIsPurchaseFlowOpen(true);
   };
 
   const completeCheckout = () => {
-    setCartCount(prev => prev + 1);
+    setCartCount(0); // Reset cart on successful purchase
     setIsPurchaseFlowOpen(false);
-    setIsCartOpen(true);
+    // Success is handled inside PurchaseFlow UI, but we could also show a global toast here
   };
 
   return (
@@ -55,6 +56,7 @@ const App: React.FC = () => {
         onClose={() => setIsCartOpen(false)} 
         count={cartCount}
         setCount={setCartCount}
+        onCheckout={startPurchaseFlow}
       />
 
       {isPurchaseFlowOpen && (

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Check, ShieldCheck, Truck, Zap } from 'lucide-react';
+import { Check, Truck } from 'lucide-react';
 import AIProductImage from './AIProductImage.tsx';
 
 interface PricingProps {
@@ -66,9 +66,6 @@ const Pricing: React.FC<PricingProps> = ({ onAddToCart }) => {
             <div className="mt-8 flex flex-wrap justify-center lg:justify-start gap-8 opacity-50">
                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-400">
                  <Truck size={14} className="text-blue-500" /> Free Shipping
-               </div>
-               <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-400">
-                 <ShieldCheck size={14} className="text-blue-500" /> 2Y Warranty
                </div>
             </div>
           </div>
