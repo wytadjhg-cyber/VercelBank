@@ -1,5 +1,4 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import fetch from "node-fetch";
 
 const PAYPAL_API = "https://api-m.paypal.com";
 
@@ -12,9 +11,9 @@ async function getAccessToken() {
     method: "POST",
     headers: {
       Authorization: `Basic ${auth}`,
-      "Content-Type": "application/x-www-form-urlencoded",
+      "Content-Type": "application/x-www-form-urlencoded"
     },
-    body: "grant_type=client_credentials",
+    body: "grant_type=client_credentials"
   });
 
   const data = await res.json();
@@ -32,11 +31,11 @@ export default async function handler(
   try {
     const accessToken = await getAccessToken();
 
-    const order = await fetch(`${PAYPAL_API}/v2/checkout/orders`, {
+    const paypalRes = await fetch(`${PAYPAL_API}/v2/checkout/orders`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
         intent: "CAPTURE",
@@ -44,17 +43,17 @@ export default async function handler(
           {
             amount: {
               currency_code: "USD",
-              value: "10.00",
-            },
-          },
-        ],
-      }),
+              value: "10.00"
+            }
+          }
+        ]
+      })
     });
 
-    const data = await order.json();
+    const data = await paypalRes.json();
     res.status(200).json(data);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "PayPal order creation failed" });
+    res.status(500).json({ error: "Order creation failed" });
   }
 }
