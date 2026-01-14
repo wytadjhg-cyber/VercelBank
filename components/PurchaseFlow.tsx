@@ -14,13 +14,16 @@ const PurchaseFlow: React.FC<PurchaseFlowProps> = ({ onClose, onComplete }) => {
   const [isSdkLoaded, setIsSdkLoaded] = useState(false);
 
   useEffect(() => {
-    // Load PayPal SDK dynamically
+    // Load PayPal SDK dynamically with CORS safety
     const script = document.createElement('script');
     script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&components=buttons&currency=USD`;
     script.async = true;
+    script.crossOrigin = "anonymous"; // Helps prevent generic 'Script error.'
+    
     script.onload = () => {
       setIsSdkLoaded(true);
       if ((window as any).paypal) {
+        // Implementing exact user-provided PayPal logic
         (window as any).paypal.Buttons({
           createOrder: async () => {
             const res = await fetch("/api/orders", { method: "POST" });
@@ -33,17 +36,25 @@ const PurchaseFlow: React.FC<PurchaseFlowProps> = ({ onClose, onComplete }) => {
             onComplete();
           },
           onCancel: () => alert("Payment cancelled."),
-          onError: (err: any) => {
-            console.error(err);
-            alert("Payment error.");
+          onError: (err: any) => { 
+            console.error("PayPal Button Error:", err); 
+            alert("Payment error."); 
           }
         }).render("#paypal-button-container");
       }
     };
+    
+    script.onerror = () => {
+      console.error("Failed to load PayPal SDK script.");
+    };
+
     document.body.appendChild(script);
 
     return () => {
-      document.body.removeChild(script);
+      // Cleanup script on unmount
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
     };
   }, [onComplete]);
 
@@ -52,7 +63,7 @@ const PurchaseFlow: React.FC<PurchaseFlowProps> = ({ onClose, onComplete }) => {
       <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={onClose} />
       
       <div className="relative w-full max-w-lg bg-zinc-950 rounded-[2.5rem] border border-white/10 shadow-2xl overflow-hidden">
-        <div className="p-8 border-b border-white/5 flex justify-between items-center">
+        <div className="p-8 border-b border-white/5 flex justify-between items-center bg-black">
           <div>
             <h2 className="text-2xl font-black uppercase tracking-tighter text-white">Secure Checkout</h2>
             <div className="flex items-center gap-2 text-zinc-500 mt-1">
@@ -80,7 +91,7 @@ const PurchaseFlow: React.FC<PurchaseFlowProps> = ({ onClose, onComplete }) => {
               <ShieldCheck size={20} />
               <span className="text-[10px] font-black uppercase tracking-[0.3em]">Purchase Protection Active</span>
             </div>
-            <p className="text-zinc-600 text-[9px] font-medium leading-relaxed uppercase tracking-widest max-w-xs">
+            <p className="text-zinc-600 text-[9px] font-medium leading-relaxed uppercase tracking-widest max-w-xs mx-auto">
               Payments are processed securely by PayPal. Your financial information is never shared with Vercel.
             </p>
           </div>

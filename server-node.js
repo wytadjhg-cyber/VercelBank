@@ -1,77 +1,84 @@
-import express from "express";
-import fetch from "node-fetch";
+
+/**
+ * VERCEL POWER CASE - PAYPAL LIVE BACKEND
+ * 
+ * Instructions:
+ * 1. Install dependencies: npm install express node-fetch dotenv
+ * 2. Set environment variables: PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET
+ * 3. Deploy to a secure server.
+ */
+
+const express = require('express');
+const fetch = require('node-fetch');
+require('dotenv').config();
 
 const app = express();
 app.use(express.json());
 
-const PAYPAL_API = "https://api-m.paypal.com";
+const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
+const BASE_URL = "https://api-m.paypal.com"; // LIVE Endpoints
 
-async function getAccessToken() {
-  const auth = Buffer.from(
-    `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`
-  ).toString("base64");
-
-  const res = await fetch(`${PAYPAL_API}/v1/oauth2/token`, {
-    method: "POST",
-    headers: {
-      Authorization: `Basic ${auth}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: "grant_type=client_credentials",
-  });
-
-  const data = await res.json();
-  return data.access_token;
+// Authentication helper
+async function generateAccessToken() {
+    const auth = Buffer.from(PAYPAL_CLIENT_ID + ":" + PAYPAL_CLIENT_SECRET).toString("base64");
+    const response = await fetch(`${BASE_URL}/v1/oauth2/token`, {
+        method: "POST",
+        body: "grant_type=client_credentials",
+        headers: {
+            Authorization: `Basic ${auth}`,
+        },
+    });
+    const data = await response.json();
+    return data.access_token;
 }
 
+// Endpoint: Create Order
 app.post("/api/orders", async (req, res) => {
-  try {
-    const accessToken = await getAccessToken();
-
-    const order = await fetch(`${PAYPAL_API}/v2/checkout/orders`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        intent: "CAPTURE",
-        purchase_units: [
-          {
-            amount: { currency_code: "USD", value: "10.00" },
-          },
-        ],
-      }),
-    });
-
-    const data = await order.json();
-    res.json(data);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("PayPal order creation failed");
-  }
+    try {
+        const accessToken = await generateAccessToken();
+        const response = await fetch(`${BASE_URL}/v2/checkout/orders`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({
+                intent: "CAPTURE",
+                purchase_units: [
+                    {
+                        amount: {
+                            currency_code: "USD",
+                            value: "69.99",
+                        },
+                        description: "Vercel Core Premium Power Case",
+                    },
+                ],
+            }),
+        });
+        const data = await response.json();
+        res.json(data);
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
 });
 
-app.post("/api/orders/:orderID/capture", async (req, res) => {
-  try {
-    const accessToken = await getAccessToken();
-
-    const capture = await fetch(
-      `${PAYPAL_API}/v2/checkout/orders/${req.params.orderID}/capture`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-
-    const data = await capture.json();
-    res.json(data);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("PayPal capture failed");
-  }
+// Endpoint: Capture Order
+app.post("/api/orders/:id/capture", async (req, res) => {
+    const { id } = req.params;
+    try {
+        const accessToken = await generateAccessToken();
+        const response = await fetch(`${BASE_URL}/v2/checkout/orders/${id}/capture`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+        const data = await response.json();
+        res.json(data);
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
 });
 
-export default app;
+app.listen(8080, () => console.log("PayPal Gateway Active on port 8080"));
