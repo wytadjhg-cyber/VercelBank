@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { X, Loader2, ShieldCheck, Lock } from 'lucide-react';
 
@@ -8,50 +7,52 @@ interface PurchaseFlowProps {
   productImage: string;
 }
 
+// Optional: keep client ID here for frontend SDK load
 const PAYPAL_CLIENT_ID = "AaUWy1kyY_e25tOqB78Zpaq3IObGDkFl927z3wfIx6k_mwei9wSFQp0cCw6rGOvH5eFUfTF31ushF5Uf";
 
 const PurchaseFlow: React.FC<PurchaseFlowProps> = ({ onClose, onComplete }) => {
   const [isSdkLoaded, setIsSdkLoaded] = useState(false);
 
   useEffect(() => {
-    // Load PayPal SDK dynamically with CORS safety
+    // Load PayPal SDK dynamically
     const script = document.createElement('script');
     script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&components=buttons&currency=USD`;
     script.async = true;
-    script.crossOrigin = "anonymous"; // Helps prevent generic 'Script error.'
-    
+    script.crossOrigin = "anonymous";
+
     script.onload = () => {
       setIsSdkLoaded(true);
       if ((window as any).paypal) {
-        // Implementing exact user-provided PayPal logic
         (window as any).paypal.Buttons({
+          // Create the order by calling our backend
           createOrder: async () => {
             const res = await fetch("/api/orders", { method: "POST" });
             const data = await res.json();
-            return data.id;
+            return data.id; // Use the order ID from the backend
           },
+          // Capture the order by calling our backend
           onApprove: async (data: any) => {
-            await fetch(`/api/orders/${data.orderID}/capture`, { method: "POST" });
+            await fetch("/api/capture", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ orderID: data.orderID || data.orderID || data.id })
+            });
             alert("Payment successful!");
             onComplete();
           },
           onCancel: () => alert("Payment cancelled."),
-          onError: (err: any) => { 
-            console.error("PayPal Button Error:", err); 
-            alert("Payment error."); 
+          onError: (err: any) => {
+            console.error("PayPal Button Error:", err);
+            alert("Payment error.");
           }
         }).render("#paypal-button-container");
       }
     };
-    
-    script.onerror = () => {
-      console.error("Failed to load PayPal SDK script.");
-    };
 
+    script.onerror = () => console.error("Failed to load PayPal SDK script.");
     document.body.appendChild(script);
 
     return () => {
-      // Cleanup script on unmount
       if (document.body.contains(script)) {
         document.body.removeChild(script);
       }
@@ -61,7 +62,7 @@ const PurchaseFlow: React.FC<PurchaseFlowProps> = ({ onClose, onComplete }) => {
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 animate-in fade-in duration-300">
       <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={onClose} />
-      
+
       <div className="relative w-full max-w-lg bg-zinc-950 rounded-[2.5rem] border border-white/10 shadow-2xl overflow-hidden">
         <div className="p-8 border-b border-white/5 flex justify-between items-center bg-black">
           <div>
@@ -83,7 +84,7 @@ const PurchaseFlow: React.FC<PurchaseFlowProps> = ({ onClose, onComplete }) => {
               <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600">Initializing Gateway...</p>
             </div>
           )}
-          
+
           <div id="paypal-button-container" className="w-full min-h-[150px]"></div>
 
           <div className="mt-10 pt-10 border-t border-white/5 flex flex-col items-center gap-4 text-center">
