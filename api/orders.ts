@@ -1,8 +1,11 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(
+  req: VercelRequest,
+  res: VercelResponse
+) {
   if (req.method !== 'POST') {
-    return res.status(405).send('Method Not Allowed');
+    return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
   const auth = Buffer.from(
@@ -23,7 +26,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           {
             amount: {
               currency_code: 'USD',
-              value: '19.99',
+              value: '10.00',
             },
           },
         ],
@@ -32,5 +35,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   );
 
   const data = await response.json();
-  res.status(200).json(data);
+  return res.status(200).json(data);
 }
