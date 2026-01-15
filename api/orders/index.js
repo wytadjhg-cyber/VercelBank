@@ -1,10 +1,17 @@
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ 
-      error: 'Method Not Allowed',
-      message: 'This endpoint requires a POST request from the application UI.' 
+  // If user visits the URL in a browser (GET), show a status message instead of a scary error
+  if (req.method === 'GET') {
+    return res.status(200).json({ 
+      status: "Operational",
+      service: "Vercel Order Gateway",
+      message: "The API is active. To place an order, please use the Buy Now button on the main website.",
+      environment: process.env.PAYPAL_CLIENT_ID ? "Configured" : "Missing Credentials"
     });
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
   const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
@@ -13,11 +20,9 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'System configuration error: Missing PayPal Credentials in Vercel.' });
   }
 
-  // Use 'api-m.paypal.com' for Live, or 'api-m.sandbox.paypal.com' for testing
   const BASE_URL = "https://api-m.paypal.com"; 
 
   try {
-    // 1. Get Access Token from PayPal
     const auth = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`).toString("base64");
     const tokenResponse = await fetch(`${BASE_URL}/v1/oauth2/token`, {
       method: "POST",
@@ -28,7 +33,6 @@ export default async function handler(req, res) {
     if (!tokenResponse.ok) throw new Error("Failed to authenticate with PayPal");
     const { access_token } = await tokenResponse.json();
 
-    // 2. Create the Order
     const orderResponse = await fetch(`${BASE_URL}/v2/checkout/orders`, {
       method: "POST",
       headers: {
