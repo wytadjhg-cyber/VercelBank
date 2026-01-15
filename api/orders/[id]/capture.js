@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
 
   if (!id) {
-    return res.status(400).json({ error: 'Missing Order ID' });
+    return res.status(400).json({ error: 'Invalid Session: Missing Order ID' });
   }
 
   const BASE_URL = "https://api-m.paypal.com";
@@ -20,8 +20,11 @@ export default async function handler(req, res) {
       body: "grant_type=client_credentials",
       headers: { Authorization: `Basic ${auth}` },
     });
+    
+    if (!tokenResponse.ok) throw new Error("Failed to authenticate with PayPal");
     const { access_token } = await tokenResponse.json();
 
+    // Capture the payment
     const captureResponse = await fetch(`${BASE_URL}/v2/checkout/orders/${id}/capture`, {
       method: "POST",
       headers: {
@@ -33,12 +36,12 @@ export default async function handler(req, res) {
     const data = await captureResponse.json();
     
     if (data.status === "COMPLETED") {
-      return res.status(200).json(data);
+      return res.status(200).json({ success: true, details: data });
     } else {
-      return res.status(400).json({ error: 'Capture failed', details: data });
+      return res.status(400).json({ error: 'Transaction not completed', details: data });
     }
   } catch (err) {
-    console.error("PayPal Capture Error:", err);
-    return res.status(500).json({ error: 'Capture process failed' });
+    console.error("Capture Failed:", err);
+    return res.status(500).json({ error: 'Payment capture system failure' });
   }
 }
