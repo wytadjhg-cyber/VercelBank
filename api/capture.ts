@@ -1,8 +1,17 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(
+  req: VercelRequest,
+  res: VercelResponse
+) {
   if (req.method !== 'POST') {
-    return res.status(405).send('Method Not Allowed');
+    return res.status(405).json({ error: 'Method Not Allowed' });
+  }
+
+  const { orderID } = req.body;
+
+  if (!orderID) {
+    return res.status(400).json({ error: 'Missing orderID' });
   }
 
   const auth = Buffer.from(
@@ -10,27 +19,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   ).toString('base64');
 
   const response = await fetch(
-    'https://api-m.paypal.com/v2/checkout/orders',
+    `https://api-m.paypal.com/v2/checkout/orders/${orderID}/capture`,
     {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Basic ${auth}`,
       },
-      body: JSON.stringify({
-        intent: 'CAPTURE',
-        purchase_units: [
-          {
-            amount: {
-              currency_code: 'USD',
-              value: '19.99',
-            },
-          },
-        ],
-      }),
     }
   );
 
   const data = await response.json();
-  res.status(200).json(data);
+  return res.status(200).json(data);
 }
