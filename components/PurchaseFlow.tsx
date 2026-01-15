@@ -15,13 +15,13 @@ const PurchaseFlow: React.FC<PurchaseFlowProps> = ({ onClose, onComplete }) => {
   const [isSdkLoaded, setIsSdkLoaded] = useState(false);
 
   useEffect(() => {
-    // 1. Check if script already exists to avoid duplicates
-    if (document.getElementById('paypal-sdk')) {
+    // 1. Prevent multiple script loads
+    if (window.hasOwnProperty('paypal')) {
       setIsSdkLoaded(true);
+      renderButtons();
       return;
     }
 
-    // 2. Load PayPal SDK dynamically
     const script = document.createElement('script');
     script.id = 'paypal-sdk';
     script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&components=buttons&currency=USD`;
@@ -30,40 +30,43 @@ const PurchaseFlow: React.FC<PurchaseFlowProps> = ({ onClose, onComplete }) => {
     
     script.onload = () => {
       setIsSdkLoaded(true);
-      if ((window as any).paypal) {
-        // Render the buttons using the exact logic provided in the prompt
+      renderButtons();
+    };
+    
+    document.body.appendChild(script);
+
+    function renderButtons() {
+      const container = document.getElementById('paypal-button-container');
+      if (container && (window as any).paypal) {
+        // Clear container before rendering to prevent double buttons
+        container.innerHTML = '';
         (window as any).paypal.Buttons({
           createOrder: async () => {
             const res = await fetch("/api/orders", { method: "POST" });
+            if (!res.ok) throw new Error("Could not create order");
             const data = await res.json();
             return data.id;
           },
           onApprove: async (data: any) => {
             const res = await fetch(`/api/orders/${data.orderID}/capture`, { method: "POST" });
             if (res.ok) {
-                alert("Payment successful!");
+                alert("Payment authorized. Welcome to Vercel.");
                 onComplete();
             } else {
-                alert("Payment capture failed. Please contact support.");
+                alert("Authorization failed. Please check your bank.");
             }
           },
-          onCancel: () => alert("Payment cancelled."),
+          onCancel: () => console.log("User cancelled"),
           onError: (err: any) => { 
             console.error("PayPal Error:", err); 
-            alert("Payment error. Please try again or use a different method."); 
+            alert("Payment could not be processed at this time."); 
           }
         }).render("#paypal-button-container");
       }
-    };
-    
-    script.onerror = () => {
-      console.error("PayPal SDK failed to load.");
-    };
-
-    document.body.appendChild(script);
+    }
 
     return () => {
-      // We keep the script tag to avoid re-loading it if the modal is re-opened
+      // Cleanup is usually not required for the SDK script as it's a global dependency
     };
   }, [onComplete]);
 
@@ -71,7 +74,7 @@ const PurchaseFlow: React.FC<PurchaseFlowProps> = ({ onClose, onComplete }) => {
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 animate-in fade-in duration-300">
       <div className="absolute inset-0 bg-black/95 backdrop-blur-xl" onClick={onClose} />
       
-      <div className="relative w-full max-w-lg bg-zinc-950 rounded-[3rem] border border-white/10 shadow-[0_0_100px_rgba(0,0,0,1)] overflow-hidden">
+      <div className="relative w-full max-w-lg bg-zinc-950 rounded-[3rem] border border-white/10 shadow-2xl overflow-hidden">
         <div className="p-8 md:p-10 border-b border-white/5 flex justify-between items-center bg-black">
           <div>
             <h2 className="text-3xl font-black uppercase tracking-tighter text-white">Checkout</h2>
@@ -86,12 +89,11 @@ const PurchaseFlow: React.FC<PurchaseFlowProps> = ({ onClose, onComplete }) => {
           {!isSdkLoaded && (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="w-12 h-12 text-blue-500 animate-spin mb-6" />
-              <p className="text-[10px] font-black uppercase tracking-[0.6em] text-zinc-700">Connecting to Global Gateway...</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.6em] text-zinc-700 text-center">Opening Secure Channel...</p>
             </div>
           )}
           
-          {/* PayPal Button Container */}
-          <div id="paypal-button-container" className="w-full min-h-[150px] transition-opacity duration-500"></div>
+          <div id="paypal-button-container" className="w-full min-h-[150px]"></div>
 
           <div className="mt-12 pt-10 border-t border-white/5 space-y-8">
             <div className="flex items-center justify-center gap-4 text-blue-500/40">
@@ -102,7 +104,7 @@ const PurchaseFlow: React.FC<PurchaseFlowProps> = ({ onClose, onComplete }) => {
             <div className="flex items-center justify-center gap-3">
                <Lock size={14} className="text-zinc-800" />
                <p className="text-zinc-700 text-[9px] font-bold uppercase tracking-[0.2em] text-center max-w-xs leading-relaxed">
-                 End-to-end encrypted transaction. Your financial data is handled exclusively by PayPal.
+                 Encrypted Transaction Gateway. Your data is protected by global banking standards.
                </p>
             </div>
           </div>

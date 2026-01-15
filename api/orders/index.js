@@ -1,15 +1,20 @@
 
-/**
- * VERCEL API: /api/orders
- * Creates a new PayPal order using secret keys.
- */
 export default async function handler(req, res) {
+  // Only allow POST requests for security
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
+    return res.status(405).json({ 
+      error: 'Method Not Allowed',
+      message: 'This endpoint requires a POST request from the application.' 
+    });
   }
 
   const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
-  const BASE_URL = "https://api-m.paypal.com"; // Change to sandbox if testing: https://api-m.sandbox.paypal.com
+
+  if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
+    return res.status(500).json({ error: 'PayPal credentials not configured in Vercel Environment Variables.' });
+  }
+
+  const BASE_URL = "https://api-m.paypal.com"; 
 
   try {
     // 1. Get Access Token
@@ -19,7 +24,9 @@ export default async function handler(req, res) {
       body: "grant_type=client_credentials",
       headers: { Authorization: `Basic ${auth}` },
     });
-    const { access_token } = await tokenResponse.json();
+    
+    const tokenData = await tokenResponse.json();
+    const access_token = tokenData.access_token;
 
     // 2. Create Order
     const orderResponse = await fetch(`${BASE_URL}/v2/checkout/orders`, {
@@ -46,6 +53,6 @@ export default async function handler(req, res) {
     return res.status(200).json(data);
   } catch (err) {
     console.error("PayPal Create Order Error:", err);
-    return res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: "Gateway Timeout", details: err.message });
   }
 }
