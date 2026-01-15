@@ -2,18 +2,18 @@
 import React from 'react';
 import { ChevronRight } from 'lucide-react';
 
-interface HeroProps {
-  onBuyNow: () => void;
-}
+const Hero: React.FC = () => {
+  const scrollToPricing = () => {
+    document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
-const Hero: React.FC<HeroProps> = ({ onBuyNow }) => {
   return (
     <section className="relative min-h-[90vh] flex flex-col items-center justify-center pt-32 pb-20 overflow-hidden">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-blue-600/5 rounded-full blur-[160px] opacity-40"></div>
       
       <div className="container mx-auto px-6 relative z-10 text-center">
         <div className="inline-block px-5 py-2 mb-10 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm animate-fade-in">
-          <span className="text-[10px] font-black tracking-[0.4em] text-blue-400 uppercase">1 iPhone compatibility release</span>
+          <span className="text-[10px] font-black tracking-[0.4em] text-blue-400 uppercase">iPhone 16 compatibility release</span>
         </div>
         
         <h1 className="text-7xl md:text-[11rem] font-black tracking-tighter mb-10 text-gradient animate-slide-up leading-[0.85]">
@@ -26,7 +26,7 @@ const Hero: React.FC<HeroProps> = ({ onBuyNow }) => {
         
         <div className="flex flex-col sm:flex-row items-center justify-center gap-10 animate-slide-up delay-300">
           <button 
-            onClick={onBuyNow}
+            onClick={scrollToPricing}
             className="group relative px-20 py-8 bg-white text-black font-black rounded-3xl overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-[0_30px_60px_rgba(255,255,255,0.2)] uppercase tracking-[0.4em] text-sm"
           >
             Buy It Now

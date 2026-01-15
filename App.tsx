@@ -17,35 +17,29 @@ const App: React.FC = () => {
   const [cartCount, setCartCount] = useState(0);
   const [isPurchaseFlowOpen, setIsPurchaseFlowOpen] = useState(false);
 
-  // The high-resolution asset link
-  const PRODUCT_IMAGE = "https://i.ibb.co/QjKsGkBV/phone-case.jpg";
-
   const startPurchaseFlow = () => {
     setIsCartOpen(false);
     setIsPurchaseFlowOpen(true);
   };
 
   const completeCheckout = () => {
-    setCartCount(0); // Reset cart on successful purchase
-    setIsPurchaseFlowOpen(false);
-    // Success is handled inside PurchaseFlow UI, but we could also show a global toast here
+    setCartCount(0); 
   };
 
   return (
     <div className="relative min-h-screen bg-black text-white selection:bg-blue-600 selection:text-white">
-      {/* Ambient background glow */}
       <div className="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-900/10 blur-[120px] rounded-full pointer-events-none z-0"></div>
       <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-900/10 blur-[120px] rounded-full pointer-events-none z-0"></div>
 
       <Navbar onCartClick={() => setIsCartOpen(true)} cartCount={cartCount} />
       
       <main className="relative z-10">
-        <Hero onBuyNow={startPurchaseFlow} />
+        <Hero />
         <Features />
         <Lifestyle />
         <ProductDetails />
         <Testimonials />
-        <Pricing onAddToCart={startPurchaseFlow} productImage={PRODUCT_IMAGE} />
+        <Pricing onAddToCart={startPurchaseFlow} />
         <FAQ />
       </main>
 
@@ -63,7 +57,6 @@ const App: React.FC = () => {
         <PurchaseFlow 
           onClose={() => setIsPurchaseFlowOpen(false)} 
           onComplete={completeCheckout} 
-          productImage={PRODUCT_IMAGE}
         />
       )}
     </div>
