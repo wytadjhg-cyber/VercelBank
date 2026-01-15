@@ -2,7 +2,6 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
-    <script src="https://www.paypal.com/sdk/js?client-id=AaUWy1kyY_e25tOqB78Zpaq3IObGDkFl927z3wfIx6k_mwei9wSFQp0cCw6rGOvH5eFUfTF31ushF5Uf&components=buttons"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vercel | Power, Perfected.</title>
@@ -10,41 +9,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <script>
-        /**
-         * VERCEL SECURITY GATEWAY - NOISE REDUCTION
-         * This script intercepts non-critical environment errors caused by 
-         * third-party SDKs (PayPal/Zoid) trying to access parent frames in restricted sandboxes.
-         */
-        (function() {
-            const handleGlobalError = (event) => {
-                const error = event.error || event.reason || {};
-                const message = (event.message || error.message || "").toString().toLowerCase();
-                const reasonMsg = (event.reason && event.reason.message || "").toString().toLowerCase();
-                const stack = (error.stack || "").toString().toLowerCase();
-                
-                // Identify the specific errors requested: 'window host', generic 'script error', or opaque objects
-                const isNoise = 
-                    message.includes('window host') || 
-                    reasonMsg.includes('window host') || 
-                    message.includes('script error') ||
-                    stack.includes('paypal') ||
-                    stack.includes('zoid') ||
-                    (event.type === 'unhandledrejection' && typeof event.reason === 'object' && !event.reason.message);
-                
-                if (isNoise) {
-                    console.debug('Gateway: Silenced environment handshake error.');
-                    if (event.preventDefault) event.preventDefault();
-                    if (event.stopImmediatePropagation) event.stopImmediatePropagation();
-                    return true;
-                }
-            };
-            window.addEventListener('error', handleGlobalError, true);
-            window.addEventListener('unhandledrejection', handleGlobalError, true);
-        })();
-    </script>
-
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -52,13 +16,11 @@
             color: #fff;
             overflow-x: hidden;
         }
-
         .text-gradient {
             background: linear-gradient(to bottom, #fff 30%, #3b82f6 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-
         ::-webkit-scrollbar { width: 3px; }
         ::-webkit-scrollbar-track { background: #000; }
         ::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 10px; }
