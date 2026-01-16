@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import Navbar from './components/Navbar.tsx';
 import Hero from './components/Hero.tsx';
 import Features from './components/Features.tsx';
@@ -28,6 +29,7 @@ const App: React.FC = () => {
 
   return (
     <div className="relative min-h-screen bg-black text-white selection:bg-blue-600 selection:text-white">
+      <Analytics />
       <div className="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-900/10 blur-[120px] rounded-full pointer-events-none z-0"></div>
       <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-900/10 blur-[120px] rounded-full pointer-events-none z-0"></div>
 
@@ -57,6 +59,7 @@ const App: React.FC = () => {
         <PurchaseFlow 
           onClose={() => setIsPurchaseFlowOpen(false)} 
           onComplete={completeCheckout} 
+          productImage="https://img.sanishtech.com/u/5b192219d20ddcda39ccaf7b0b35b4ef.png"
         />
       )}
     </div>
